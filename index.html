@@ -561,11 +561,28 @@
             updateCalculations();
         }
         
-        // Share functionality
-        function generateShareLink() {
-            // In a real implementation, this would call a serverless function
-            alert('I en rigtig implementering ville dette generere et sikkert delingslink med udløbsdato.');
-        }
+       // Share functionality
+async function generateShareLink() {
+  try {
+    const r = await fetch('/api/generate-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ttlMinutes: 60 }) // gyldigt i 60 min
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || 'Kunne ikke lave link');
+
+    try {
+      await navigator.clipboard.writeText(data.url);
+      alert('Link kopieret til udklipsholder:\n\n' + data.url);
+    } catch {
+      prompt('Kopiér dette link', data.url);
+    }
+  } catch (e) {
+    alert('Kunne ikke generere link');
+  }
+}
+
         
         // Initialize event listeners
         function initEventListeners() {
@@ -576,8 +593,6 @@
                 }
             });
             
-            // Reset button
-            elements.resetButton.addEventListener('click', resetToDefaults);
             
             // Share button
             elements.shareButton.addEventListener('click', generateShareLink);
