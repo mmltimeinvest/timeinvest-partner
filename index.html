@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partner-beregner</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <style>
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #465758;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #465758;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Header -->
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">TimeInvest Partner-beregner</h1>
+            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                Juster antagelserne og se effekten på indtjeningen og kundens besparelse
+            </p>
+        </header>
+
+        <!-- Assumptions Section -->
+        <section class="mb-12 bg-white rounded-xl shadow-lg p-6" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Antagelser</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Portefølje formue -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Portefølje formue (mio kr)
+                    </label>
+                    <input 
+                        type="number" 
+                        id="portfolioValue" 
+                        value="1000" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        data-input="portfolioValue"
+                    >
+                </div>
+                
+                <!-- Flytbar i procent -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Flytbar i procent (%)
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input 
+                            type="range" 
+                            id="movablePercent" 
+                            min="0" 
+                            max="100" 
+                            value="30" 
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            data-input="movablePercent"
+                        >
+                        <span id="movablePercentValue" class="text-lg font-semibold w-12">30%</span>
+                    </div>
+                </div>
+                
+                <!-- Rådgivningsfee -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Rådgivningsfee (%)
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input 
+                            type="range" 
+                            id="advisoryFee" 
+                            min="0" 
+                            max="2" 
+                            step="0.05" 
+                            value="0.5" 
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            data-input="advisoryFee"
+                        >
+                        <span id="advisoryFeeValue" class="text-lg font-semibold w-16">0,5%</span>
+                    </div>
+                </div>
+                
+                <!-- Årlig vækst -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Årlig vækst (mio kr)
+                    </label>
+                    <input 
+                        type="number" 
+                        id="annualGrowth" 
+                        value="30" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        data-input="annualGrowth"
+                    >
+                </div>
+                
+                <!-- Kursstigning -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Årlig kursstigning (%)
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input 
+                            type="range" 
+                            id="growthRate" 
+                            min="-5" 
+                            max="15" 
+                            step="0.1" 
+                            value="0" 
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            data-input="growthRate"
+                        >
+                        <span id="growthRateValue" class="text-lg font-semibold w-16">0%</span>
+                    </div>
+                </div>
+                
+                <!-- TimeInvest andel -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        TimeInvest andel (%)
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input 
+                            type="range" 
+                            id="timeinvestShare" 
+                            min="0" 
+                            max="100" 
+                            value="40" 
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            data-input="timeinvestShare"
+                        >
+                        <span id="timeinvestShareValue" class="text-lg font-semibold w-12">40%</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Metrics Year 1 -->
+        <section class="mb-12" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Nøgletal år 1</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="stat-card bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-medium text-gray-500 mb-2">Formue under rådgivning</h3>
+                    <p id="wealthUnderAdvisory" class="text-3xl font-bold text-[#465758]">1.000.000 kr</p>
+                </div>
+                
+                <div class="stat-card bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-medium text-gray-500 mb-2">Bruttoindtægt</h3>
+                    <p id="grossRevenue" class="text-3xl font-bold text-[#465758]">5.000.000 kr</p>
+                </div>
+                
+                <div class="stat-card bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-medium text-gray-500 mb-2">TimeInvest andel</h3>
+                    <p id="timeinvestShareAmount" class="text-3xl font-bold text-[#465758]">2.000.000 kr</p>
+                </div>
+                
+                <div class="stat-card bg-white rounded-xl shadow-lg p-6">
+                    <h3 class="text-lg font-medium text-gray-500 mb-2">Egen indtjening</h3>
+                    <p id="ownEarnings" class="text-3xl font-bold text-[#465758]">3.000.000 kr</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Five Year Overview Table -->
+        <section class="mb-12 bg-white rounded-xl shadow-lg p-6" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Fem års oversigt</h2>
+            
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">År</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Formue</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rådgivningsfee</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brutto</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TimeInvest andel</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Egen indtjening</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200" id="fiveYearTable">
+                        <!-- Rows will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Customer Cost Comparison -->
+        <section class="mb-12 bg-white rounded-xl shadow-lg p-6" data-aos="fade-up">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Kundens omkostningssammenligning</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                <!-- Nuværende porteføljeomkostninger -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Nuværende porteføljeomkostninger (%)
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input 
+                            type="range" 
+                            id="currentPortfolioCost" 
+                            min="0" 
+                            max="3" 
+                            step="0.05" 
+                            value="1.2" 
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            data-input="currentPortfolioCost"
+                        >
+                        <span id="currentPortfolioCostValue" class="text-lg font-semibold w-16">1,2%</span>
+                    </div>
+                </div>
+                
+                <!-- Forventede porteføljeomkostninger -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Forventede porteføljeomkostninger (%)
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input 
+                            type="range" 
+                            id="expectedPortfolioCost" 
+                            min="0" 
+                            max="3" 
+                            step="0.05" 
+                            value="0.8" 
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            data-input="expectedPortfolioCost"
+                        >
+                        <span id="expectedPortfolioCostValue" class="text-lg font-semibold w-16">0,8%</span>
+                    </div>
+                </div>
+                
+                <!-- Nuværende rådgivningsfee -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Nuværende rådgivningsfee (%)
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input 
+                            type="range" 
+                            id="currentAdvisoryFee" 
+                            min="0" 
+                            max="2" 
+                            step="0.05" 
+                            value="0.35" 
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            data-input="currentAdvisoryFee"
+                        >
+                        <span id="currentAdvisoryFeeValue" class="text-lg font-semibold w-16">0,35%</span>
+                    </div>
+                </div>
+                
+                <!-- Forventet rådgivningsfee -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Forventet rådgivningsfee (%)
+                    </label>
+                    <div class="flex items-center space-x-3">
+                        <input 
+                            type="range" 
+                            id="expectedAdvisoryFee" 
+                            min="0" 
+                            max="2" 
+                            step="0.05" 
+                            value="0.6" 
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            data-input="expectedAdvisoryFee"
+                        >
+                        <span id="expectedAdvisoryFeeValue" class="text-lg font-semibold w-16">0,6%</span>
+                    </div>
+                </div>
+                
+                <!-- Beregning på beløb -->
+                <div class="space-y-2">
+                    <label class="block text-sm font-medium text-gray-700">
+                        Beløb (mio kr)
+                    </label>
+                    <input 
+                        type="number" 
+                        id="calculationAmount" 
+                        value="100" 
+                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        data-input="calculationAmount"
+                    >
+                </div>
+            </div>
+            
+            <!-- Savings Section -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="stat-card bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-xl p-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Sparede porteføljeomkostninger</h3>
+                    <p id="savedPortfolioCosts" class="text-2xl font-bold text-[#465758]">400.000 kr</p>
+                </div>
+                
+                <div class="stat-card bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-xl p-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Mer eller mindre rådgivningsfee</h3>
+                    <p id="advisoryFeeDifference" class="text-2xl font-bold text-[#465758]">250.000 kr</p>
+                </div>
+                
+                <div class="stat-card bg-gradient-to-br from-purple-50 to-violet-50 border border-purple-100 rounded-xl p-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-2">Netto besparelse</h3>
+                    <p id="netSavings" class="text-2xl font-bold text-[#465758]">150.000 kr</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-12">
+            <button 
+                id="resetButton" 
+                class="px-6 py-3 bg-[#465758] text-white rounded-lg hover:bg-[#3a4849] transition-colors flex items-center"
+            >
+                <i data-feather="refresh-ccw" class="mr-2"></i>
+                Nulstil
+            </button>
+            
+            <button 
+                id="shareButton" 
+                class="px-6 py-3 bg-[#465758] text-white rounded-lg hover:bg-[#3a4849] transition-colors flex items-center"
+            >
+                <i data-feather="share" class="mr-2"></i>
+                Del midlertidig adgang
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Feather Icons
+        feather.replace();
+        
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            once: true
+        });
+        
+        // State management
+        const state = {
+            portfolioValue: 1000,
+            movablePercent: 30,
+            advisoryFee: 0.5,
+            annualGrowth: 30,
+            growthRate: 0,
+            timeinvestShare: 40,
+            currentPortfolioCost: 1.2,
+            expectedPortfolioCost: 0.8,
+            currentAdvisoryFee: 0.35,
+            expectedAdvisoryFee: 0.6,
+            calculationAmount: 100
+        };
+        
+        // DOM Elements
+        const elements = {
+            portfolioValue: document.getElementById('portfolioValue'),
+            movablePercent: document.getElementById('movablePercent'),
+            movablePercentValue: document.getElementById('movablePercentValue'),
+            advisoryFee: document.getElementById('advisoryFee'),
+            advisoryFeeValue: document.getElementById('advisoryFeeValue'),
+            annualGrowth: document.getElementById('annualGrowth'),
+            growthRate: document.getElementById('growthRate'),
+            growthRateValue: document.getElementById('growthRateValue'),
+            timeinvestShare: document.getElementById('timeinvestShare'),
+            timeinvestShareValue: document.getElementById('timeinvestShareValue'),
+            currentPortfolioCost: document.getElementById('currentPortfolioCost'),
+            currentPortfolioCostValue: document.getElementById('currentPortfolioCostValue'),
+            expectedPortfolioCost: document.getElementById('expectedPortfolioCost'),
+            expectedPortfolioCostValue: document.getElementById('expectedPortfolioCostValue'),
+            currentAdvisoryFee: document.getElementById('currentAdvisoryFee'),
+            currentAdvisoryFeeValue: document.getElementById('currentAdvisoryFeeValue'),
+            expectedAdvisoryFee: document.getElementById('expectedAdvisoryFee'),
+            expectedAdvisoryFeeValue: document.getElementById('expectedAdvisoryFeeValue'),
+            calculationAmount: document.getElementById('calculationAmount'),
+            resetButton: document.getElementById('resetButton'),
+            shareButton: document.getElementById('shareButton')
+        };
+        
+        // Format currency
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('da-DK').format(Math.round(value)) + ' kr';
+        }
+        
+        // Update slider values display
+        function updateSliderDisplays() {
+            elements.movablePercentValue.textContent = state.movablePercent + '%';
+            elements.advisoryFeeValue.textContent = state.advisoryFee.toFixed(2).replace('.', ',') + '%';
+            elements.growthRateValue.textContent = state.growthRate.toFixed(1).replace('.', ',') + '%';
+            elements.timeinvestShareValue.textContent = state.timeinvestShare + '%';
+            elements.currentPortfolioCostValue.textContent = state.currentPortfolioCost.toFixed(2).replace('.', ',') + '%';
+            elements.expectedPortfolioCostValue.textContent = state.expectedPortfolioCost.toFixed(2).replace('.', ',') + '%';
+            elements.currentAdvisoryFeeValue.textContent = state.currentAdvisoryFee.toFixed(2).replace('.', ',') + '%';
+            elements.expectedAdvisoryFeeValue.textContent = state.expectedAdvisoryFee.toFixed(2).replace('.', ',') + '%';
+        }
+        
+        // Calculate key metrics for year 1
+        function calculateYearOneMetrics() {
+            const wealthUnderAdvisory = state.portfolioValue * (state.movablePercent / 100);
+            const grossRevenue = wealthUnderAdvisory * (state.advisoryFee / 100);
+            const timeinvestShareAmount = grossRevenue * (state.timeinvestShare / 100);
+            const ownEarnings = grossRevenue - timeinvestShareAmount;
+            
+            document.getElementById('wealthUnderAdvisory').textContent = formatCurrency(wealthUnderAdvisory * 1000000);
+            document.getElementById('grossRevenue').textContent = formatCurrency(grossRevenue * 1000000);
+            document.getElementById('timeinvestShareAmount').textContent = formatCurrency(timeinvestShareAmount * 1000000);
+            document.getElementById('ownEarnings').textContent = formatCurrency(ownEarnings * 1000000);
+        }
+        
+        // Generate five year table
+        function generateFiveYearTable() {
+            const tableBody = document.getElementById('fiveYearTable');
+            tableBody.innerHTML = '';
+            
+            let currentWealth = state.portfolioValue * (state.movablePercent / 100);
+            
+            for (let year = 1; year <= 5; year++) {
+                // Apply annual growth
+                if (year > 1) {
+                    currentWealth += state.annualGrowth * (state.movablePercent / 100);
+                    currentWealth *= (1 + state.growthRate / 100);
+                }
+                
+                const advisoryFeeAmount = currentWealth * (state.advisoryFee / 100);
+                const timeinvestShareAmount = advisoryFeeAmount * (state.timeinvestShare / 100);
+                const ownEarnings = advisoryFeeAmount - timeinvestShareAmount;
+                
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-gray-50';
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${year}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatCurrency(currentWealth * 1000000)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatCurrency(advisoryFeeAmount * 1000000)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatCurrency(advisoryFeeAmount * 1000000)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatCurrency(timeinvestShareAmount * 1000000)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatCurrency(ownEarnings * 1000000)}</td>
+                `;
+                
+                tableBody.appendChild(row);
+            }
+        }
+        
+        // Calculate customer savings
+        function calculateSavings() {
+            const amount = state.calculationAmount;
+            const savedPortfolioCosts = amount * (state.currentPortfolioCost - state.expectedPortfolioCost) / 100 * 1000000;
+            const advisoryFeeDifference = amount * (state.expectedAdvisoryFee - state.currentAdvisoryFee) / 100 * 1000000;
+            const netSavings = savedPortfolioCosts - advisoryFeeDifference;
+            
+            document.getElementById('savedPortfolioCosts').textContent = formatCurrency(savedPortfolioCosts);
+            document.getElementById('advisoryFeeDifference').textContent = formatCurrency(Math.abs(advisoryFeeDifference));
+            document.getElementById('netSavings').textContent = formatCurrency(netSavings);
+        }
+        
+        // Update all calculations
+        function updateCalculations() {
+            calculateYearOneMetrics();
+            generateFiveYearTable();
+            calculateSavings();
+        }
+        
+        // Handle input changes
+        function handleInputChange(event) {
+            const inputId = event.target.id;
+            let value = parseFloat(event.target.value);
+            
+            // Validate and constrain values
+            if (inputId === 'portfolioValue' || inputId === 'annualGrowth' || inputId === 'calculationAmount') {
+                value = Math.max(0, value);
+            } else if (inputId.includes('Percent') || inputId.includes('Share')) {
+                value = Math.min(100, Math.max(0, value));
+            } else if (inputId.includes('Fee') || inputId.includes('Cost')) {
+                value = Math.max(0, value);
+            }
+            
+            state[inputId] = value;
+            event.target.value = value;
+            
+            updateSliderDisplays();
+            updateCalculations();
+        }
+        
+        // Reset to defaults
+        function resetToDefaults() {
+            state.portfolioValue = 1000;
+            state.movablePercent = 30;
+            state.advisoryFee = 0.5;
+            state.annualGrowth = 30;
+            state.growthRate = 0;
+            state.timeinvestShare = 40;
+            state.currentPortfolioCost = 1.2;
+            state.expectedPortfolioCost = 0.8;
+            state.currentAdvisoryFee = 0.35;
+            state.expectedAdvisoryFee = 0.6;
+            state.calculationAmount = 100;
+            
+            // Update input fields
+            elements.portfolioValue.value = state.portfolioValue;
+            elements.movablePercent.value = state.movablePercent;
+            elements.advisoryFee.value = state.advisoryFee;
+            elements.annualGrowth.value = state.annualGrowth;
+            elements.growthRate.value = state.growthRate;
+            elements.timeinvestShare.value = state.timeinvestShare;
+            elements.currentPortfolioCost.value = state.currentPortfolioCost;
+            elements.expectedPortfolioCost.value = state.expectedPortfolioCost;
+            elements.currentAdvisoryFee.value = state.currentAdvisoryFee;
+            elements.expectedAdvisoryFee.value = state.expectedAdvisoryFee;
+            elements.calculationAmount.value = state.calculationAmount;
+            
+            updateSliderDisplays();
+            updateCalculations();
+        }
+        
+        // Share functionality
+        function generateShareLink() {
+            // In a real implementation, this would call a serverless function
+            alert('I en rigtig implementering ville dette generere et sikkert delingslink med udløbsdato.');
+        }
+        
+        // Initialize event listeners
+        function initEventListeners() {
+            // Input change listeners
+            document.querySelectorAll('[data-input]').forEach(input => {
+                if (input.type === 'range' || input.type === 'number') {
+                    input.addEventListener('input', handleInputChange);
+                }
+            });
+            
+            // Reset button
+            elements.resetButton.addEventListener('click', resetToDefaults);
+            
+            // Share button
+            elements.shareButton.addEventListener('click', generateShareLink);
+        }
+        
+        // Initialize the application
+        function init() {
+            updateSliderDisplays();
+            updateCalculations();
+            initEventListeners();
+        }
+        
+        // Start the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
