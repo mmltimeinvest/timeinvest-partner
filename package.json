@@ -1,0 +1,10 @@
+{
+  "name": "timeinvest-partner",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "dependencies": {
+    "@vercel/kv": "^2.0.0"
+  }
+}
