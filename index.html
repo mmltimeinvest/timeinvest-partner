@@ -117,7 +117,7 @@
                             id="advisoryFee" 
                             min="0" 
                             max="2" 
-                            step="0.05" 
+                            step="0.01" 
                             value="0.5" 
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             data-input="advisoryFee"
@@ -149,9 +149,9 @@
                         <input 
                             type="range" 
                             id="growthRate" 
-                            min="-5" 
+                            min="0" 
                             max="15" 
-                            step="0.1" 
+                            step="0.5" 
                             value="0" 
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             data-input="growthRate"
@@ -247,7 +247,7 @@
                             id="currentPortfolioCost" 
                             min="0" 
                             max="3" 
-                            step="0.05" 
+                            step="0.01" 
                             value="1.2" 
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             data-input="currentPortfolioCost"
@@ -267,7 +267,7 @@
                             id="expectedPortfolioCost" 
                             min="0" 
                             max="3" 
-                            step="0.05" 
+                            step="0.01" 
                             value="0.8" 
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             data-input="expectedPortfolioCost"
@@ -307,7 +307,7 @@
                             id="expectedAdvisoryFee" 
                             min="0" 
                             max="2" 
-                            step="0.05" 
+                            step="0.01" 
                             value="0.6" 
                             class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             data-input="expectedAdvisoryFee"
@@ -593,7 +593,9 @@ async function generateShareLink() {
                 }
             });
             
-            
+            // Reset button
+            elements.resetButton.addEventListener('click', resetToDefaults);
+
             // Share button
             elements.shareButton.addEventListener('click', generateShareLink);
         }
